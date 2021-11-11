@@ -39,7 +39,7 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
-        sameSite: "none", // csrf
+        sameSite: "lax", // csrf
         secure: __prod__,
       },
       saveUninitialized: false,
@@ -56,6 +56,7 @@ const main = async () => {
     context: ({req, res}): MyContext => ({em: orm.em, req, res}),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
+
   await apolloServer.start()
   apolloServer.applyMiddleware({app, cors: false});
   app.listen(4000, () => {
@@ -64,4 +65,6 @@ const main = async () => {
 
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+});

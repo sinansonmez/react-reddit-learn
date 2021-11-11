@@ -48,17 +48,17 @@ FieldError = __decorate([
 let UserResponse = class UserResponse {
 };
 __decorate([
-    (0, type_graphql_1.Field)(_type => [FieldError], { nullable: true }),
+    (0, type_graphql_1.Field)(() => [FieldError], { nullable: true }),
     __metadata("design:type", Array)
 ], UserResponse.prototype, "errors", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(_type => User_1.User, { nullable: true }),
+    (0, type_graphql_1.Field)(() => User_1.User, { nullable: true }),
     __metadata("design:type", User_1.User)
 ], UserResponse.prototype, "user", void 0);
 UserResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], UserResponse);
-class UserResolver {
+let UserResolver = class UserResolver {
     async me({ req, em }) {
         if (!req.session.userId) {
             return null;
@@ -66,72 +66,109 @@ class UserResolver {
         const user = await em.findOne(User_1.User, { id: req.session.userId });
         return user;
     }
-    users({ em }) {
-        return em.find(User_1.User, {});
-    }
-    async register({ req, em }, options) {
+    async register(options, { em, req }) {
         if (options.username.length <= 2) {
-            return { errors: [{ field: "username", message: "length must be greater than 2" }] };
+            return {
+                errors: [
+                    {
+                        field: "username",
+                        message: "length must be greater than 2",
+                    },
+                ],
+            };
         }
         if (options.password.length <= 2) {
-            return { errors: [{ field: "password", message: "length must be greater than 2" }] };
+            return {
+                errors: [
+                    {
+                        field: "password",
+                        message: "length must be greater than 2",
+                    },
+                ],
+            };
         }
         const hashedPassword = await argon2_1.default.hash(options.password);
-        const user = em.create(User_1.User, { username: options.username, password: hashedPassword });
+        let user;
         try {
-            await em.persistAndFlush(user);
+            const result = await em
+                .createQueryBuilder(User_1.User)
+                .getKnexQuery()
+                .insert({
+                username: options.username,
+                password: hashedPassword,
+                created_at: new Date(),
+                updated_at: new Date(),
+            })
+                .returning("*");
+            user = result[0];
         }
         catch (err) {
             if (err.code === "23505") {
-                return { errors: [{ field: "username", message: "username already taken" }] };
+                return {
+                    errors: [
+                        {
+                            field: "username",
+                            message: "username already taken",
+                        },
+                    ],
+                };
             }
-            console.log(err);
         }
         req.session.userId = user.id;
         return { user };
     }
-    async login({ em, req }, options) {
+    async login(options, { em, req }) {
         const user = await em.findOne(User_1.User, { username: options.username });
         if (!user) {
-            return { errors: [{ field: "username", message: "username not found" }] };
+            return {
+                errors: [
+                    {
+                        field: "username",
+                        message: "that username doesn't exist",
+                    },
+                ],
+            };
         }
         const valid = await argon2_1.default.verify(user.password, options.password);
         if (!valid) {
-            return { errors: [{ field: "password", message: "invalid password" }] };
+            return {
+                errors: [
+                    {
+                        field: "password",
+                        message: "incorrect password",
+                    },
+                ],
+            };
         }
         req.session.userId = user.id;
         return { user };
     }
-}
+};
 __decorate([
-    (0, type_graphql_1.Query)(_returns => User_1.User, { nullable: true }),
+    (0, type_graphql_1.Query)(() => User_1.User, { nullable: true }),
     __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "me", null);
 __decorate([
-    (0, type_graphql_1.Query)(_returns => [User_1.User]),
-    __param(0, (0, type_graphql_1.Ctx)()),
+    (0, type_graphql_1.Mutation)(_return => UserResponse),
+    __param(0, (0, type_graphql_1.Arg)("options")),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserResolver.prototype, "users", null);
-__decorate([
-    (0, type_graphql_1.Mutation)(_returns => UserResponse),
-    __param(0, (0, type_graphql_1.Ctx)()),
-    __param(1, (0, type_graphql_1.Arg)("options")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, UsernamePasswordInput]),
+    __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(_returns => UserResponse),
-    __param(0, (0, type_graphql_1.Ctx)()),
-    __param(1, (0, type_graphql_1.Arg)("options")),
+    (0, type_graphql_1.Mutation)(_return => UserResponse),
+    __param(0, (0, type_graphql_1.Arg)("options")),
+    __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, UsernamePasswordInput]),
+    __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
+UserResolver = __decorate([
+    (0, type_graphql_1.Resolver)()
+], UserResolver);
 exports.UserResolver = UserResolver;
 //# sourceMappingURL=user.js.map

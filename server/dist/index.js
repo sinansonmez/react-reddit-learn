@@ -36,7 +36,7 @@ const main = async () => {
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
             httpOnly: true,
-            sameSite: "none",
+            sameSite: "lax",
             secure: constants_1.__prod__,
         },
         saveUninitialized: false,
@@ -57,5 +57,7 @@ const main = async () => {
         console.log("Server started on port 4000");
     });
 };
-main();
+main().catch((err) => {
+    console.error(err);
+});
 //# sourceMappingURL=index.js.map
