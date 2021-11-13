@@ -18,9 +18,9 @@ const Register: FunctionComponent<OwnProps> = ({}) => {
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{username: "", password: ""}}
+        initialValues={{email: "", username: "", password: ""}}
         onSubmit={async (values, {setErrors}) => {
-          const response = await register(values);
+          const response = await register({options: values});
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
@@ -32,6 +32,9 @@ const Register: FunctionComponent<OwnProps> = ({}) => {
         {({isSubmitting}) => (
           <Form>
             <InputField label="Username" placeholder="Enter your username" name="username"/>
+            <Box mt={4}>
+              <InputField label="Email" placeholder="Enter your email" name="email"/>
+            </Box>
             <Box mt={4}>
               <InputField label="Password" placeholder="Enter your password" name="password" type="password"/>
             </Box>

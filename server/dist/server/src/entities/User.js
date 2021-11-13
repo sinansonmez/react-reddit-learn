@@ -42,11 +42,6 @@ __decorate([
     (0, core_1.Property)({ type: "text" }),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(_type => String),
-    (0, core_1.Property)({ type: "text", unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
 User = __decorate([
     (0, type_graphql_1.ObjectType)(),
     (0, core_1.Entity)()
