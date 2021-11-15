@@ -201,8 +201,9 @@ export class UserResolver {
         ],
       };
     }
-
+    console.log(req.session)
     req.session.userId = user.id;
+    console.log(req.session)
 
     return {user};
   }
@@ -220,5 +221,10 @@ export class UserResolver {
         resolve(true);
       })
     );
+  }
+
+  @Query(_return => [User])
+  users(): Promise<User[]> {
+    return User.find();
   }
 }
