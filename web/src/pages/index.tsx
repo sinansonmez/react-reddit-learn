@@ -4,8 +4,7 @@ import {usePostsQuery} from "../generated/graphql";
 import Layout from "../components/Layout";
 
 const Index = () => {
-  const [response] = usePostsQuery()
-  console.log(response)
+  const [response] = usePostsQuery({variables: {limit: 5}});
   return (
     <Layout>
       {!response.data ? (
