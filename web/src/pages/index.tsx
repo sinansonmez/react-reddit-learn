@@ -4,9 +4,11 @@ import {usePostsQuery} from "../generated/graphql";
 import Layout from "../components/Layout";
 import {Stack, Box, Heading, Text, Flex, Button} from "@chakra-ui/react";
 import NextLink from "next/link";
+import {useState} from "react";
 
 const Index = () => {
-  const [response] = usePostsQuery({variables: {limit: 20}});
+  const [variables, setVariables] = useState({limit: 10, cursor: null as null | string});
+  const [response] = usePostsQuery({variables: variables});
   if (!response.data && !response.fetching) {
     return (
       <Layout>
@@ -34,7 +36,13 @@ const Index = () => {
           })
         )}
       </Stack>
-      {response.data ? <Button isLoading={response.fetching} m="auto" my={8} colorScheme="teal">Create Post</Button>: null}
+      {response.data ?
+        <Button onClick={() => {
+          setVariables({
+            limit: variables.limit,
+            cursor: response.data.posts[response.data.posts.length - 1].createdAt
+          })
+        }} isLoading={response.fetching} m="auto" my={8} colorScheme="teal">Load More</Button> : null}
     </Layout>
   )
 }
