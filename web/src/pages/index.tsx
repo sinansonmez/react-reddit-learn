@@ -5,6 +5,7 @@ import Layout from "../components/Layout";
 
 const Index = () => {
   const [response] = usePostsQuery()
+  console.log(response)
   return (
     <Layout>
       {!response.data ? (
