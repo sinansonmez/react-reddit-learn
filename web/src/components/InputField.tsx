@@ -12,6 +12,7 @@ type OwnProps = InputHTMLAttributes<HTMLInputElement> & {
 const InputField: FunctionComponent<OwnProps> = ({label, textarea, size: _, ...props}) => {
   let InputOrTextArea = textarea ? Textarea : Input
   const [field, {error}] = useField(props)
+  // @ts-ignore
   return (
     <FormControl isInvalid={!!error}>
       <FormLabel htmlFor={field.name}>{label}</FormLabel>
