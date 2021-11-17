@@ -38,7 +38,7 @@ const Register: FunctionComponent<OwnProps> = ({}) => {
             <Box mt={4}>
               <InputField label="Password" placeholder="Enter your password" name="password" type="password"/>
             </Box>
-            <Button type={"submit"} variantColor="teal" isLoading={isSubmitting} mt={4}>Register</Button>
+            <Button type={"submit"} colorScheme="teal" isLoading={isSubmitting} mt={4}>Register</Button>
           </Form>
         )}
       </Formik>

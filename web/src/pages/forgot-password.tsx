@@ -24,7 +24,7 @@ const ForgotPassword: FunctionComponent<{}> = ({}) => {
         {({isSubmitting}) => complete ? <Box>if an account email is exist, we will send you an email</Box> : (
           <Form>
             <InputField label="Email" placeholder="Enter your email" name="email"/>
-            <Button type={"submit"} variantColor="teal" isLoading={isSubmitting} mt={4}>Send forgot password</Button>
+            <Button type={"submit"} colorScheme="teal" isLoading={isSubmitting} mt={4}>Send forgot password</Button>
             <Flex>
               <NextLink href="/forgot-password">
                 <Link ml="auto">Forgot Password?</Link>

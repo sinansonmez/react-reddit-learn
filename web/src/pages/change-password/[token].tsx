@@ -48,7 +48,7 @@ const ChangePassword: NextPage<{token: string}> = ({token}) => {
                 </NextLink>
               </Box>
               : null}
-            <Button type={"submit"} variantColor="teal" isLoading={isSubmitting} mt={4}>Change Password</Button>
+            <Button type={"submit"} colorScheme="teal" isLoading={isSubmitting} mt={4}>Change Password</Button>
           </Form>
         )}
       </Formik>

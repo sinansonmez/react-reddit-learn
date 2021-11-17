@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react';
-import { Box, Button, Flex, Link } from "@chakra-ui/react";
+import React, {FunctionComponent} from 'react';
+import {Box, Button, Flex, Link} from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useLogoutMutation, useMeQuery } from "../generated/graphql";
-import { isServer } from "../utils/isServer";
+import {useLogoutMutation, useMeQuery} from "../generated/graphql";
+import {isServer} from "../utils/isServer";
 
 interface OwnProps {
 }
@@ -31,7 +31,9 @@ const NavBar: FunctionComponent<OwnProps> = ({}) => {
       <Flex>
         <Box mr={2}>{data.me.username}</Box>
         <Button
-          onClick={() => {logout()}}
+          onClick={() => {
+            logout()
+          }}
           isLoading={LogoutFetching}
           variant="link"
           color={LogoutFetching ? "gray" : "white"}
@@ -40,7 +42,7 @@ const NavBar: FunctionComponent<OwnProps> = ({}) => {
     )
   }
   return (
-    <Flex bg="tomato" p={4} ml={"auto"}>
+    <Flex position="sticky" top={0} zIndex={1} bg="tomato" p={4} ml={"auto"}>
       <Box ml="auto">
         {body}
       </Box>

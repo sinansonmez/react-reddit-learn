@@ -33,7 +33,7 @@ const Login: FunctionComponent<{}> = ({}) => {
             <Box mt={4}>
               <InputField label="Password" placeholder="Enter your password" name="password" type="password"/>
             </Box>
-            <Button type={"submit"} variantColor="teal" isLoading={isSubmitting} mt={4}>Login</Button>
+            <Button type={"submit"} colorScheme="teal" isLoading={isSubmitting} mt={4}>Login</Button>
             <Flex>
               <NextLink href="/forgot-password">
                 <Link ml="auto">Forgot Password?</Link>
