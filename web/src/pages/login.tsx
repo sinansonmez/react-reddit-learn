@@ -13,6 +13,7 @@ import NextLink from "next/link";
 const Login: FunctionComponent<{}> = ({}) => {
   const [, login] = useLoginMutation()
   const router = useRouter()
+  console.log(router)
   return (
     <Wrapper variant="small">
       <Formik
@@ -23,7 +24,11 @@ const Login: FunctionComponent<{}> = ({}) => {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
             // worked
-            router.push("/");
+            if (typeof router.query.next === "string") {
+              router.push(router.query.next)
+            } else {
+              router.push("/")
+            }
           }
         }}
       >
