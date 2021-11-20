@@ -86,6 +86,7 @@ export class PostResolver {
     const qb = getConnection()
       .getRepository(Post)
       .createQueryBuilder("p")
+      .innerJoinAndSelect("p.creator", "u", "u.id = p.creatorId")
       .orderBy("p.createdAt", "DESC")
       .take(realLimitPlusOne)
     if (cursor) {

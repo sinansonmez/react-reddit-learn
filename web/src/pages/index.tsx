@@ -7,9 +7,9 @@ import NextLink from "next/link";
 import {useState} from "react";
 
 const Index = () => {
-  const [variables, setVariables] = useState({limit: 10, cursor: null as null | string});
+  const [variables, setVariables] = useState({limit: 15, cursor: null as null | string});
   const [response] = usePostsQuery({variables: variables});
-  if (!response.data && !response.fetching) {
+  if (!response.data && response.fetching) {
     return (
       <Layout>
         <div>Failed query for some reason</div>
@@ -31,6 +31,7 @@ const Index = () => {
           response.data!.posts.posts.map((p) => {
             return <Box key={p.id} p={5} shadow="md" borderWidth="1px">
               <Heading fontSize="xl">{p.title}</Heading>
+              {p.creator?.username || "null"}
               <Text mt={4}>{p.textSnippet}</Text>
             </Box>;
           })
