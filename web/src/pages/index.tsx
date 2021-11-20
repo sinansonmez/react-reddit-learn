@@ -28,7 +28,7 @@ const Index = () => {
         {response.fetching && !response.data ? (
           <div>loading...</div>
         ) : (
-          response.data!.posts.map((p) => {
+          response.data!.posts.posts.map((p) => {
             return <Box key={p.id} p={5} shadow="md" borderWidth="1px">
               <Heading fontSize="xl">{p.title}</Heading>
               <Text mt={4}>{p.textSnippet}</Text>
@@ -36,11 +36,11 @@ const Index = () => {
           })
         )}
       </Stack>
-      {response.data ?
+      {response.data && response.data.posts.hasMore ?
         <Button onClick={() => {
           setVariables({
             limit: variables.limit,
-            cursor: response.data.posts[response.data.posts.length - 1].createdAt
+            cursor: response.data!.posts.posts[response.data!.posts.posts.length - 1].createdAt
           })
         }} isLoading={response.fetching} m="auto" my={8} colorScheme="teal">Load More</Button> : null}
     </Layout>

@@ -5,7 +5,7 @@ import {
   FieldResolver,
   InputType,
   Int,
-  Mutation,
+  Mutation, ObjectType,
   Query,
   Resolver,
   Root,
@@ -24,6 +24,14 @@ class PostInput {
   text: string;
 }
 
+@ObjectType()
+class PaginatedPosts {
+  @Field(_return => [Post])
+  posts: Post[];
+  @Field()
+  hasMore: boolean;
+}
+
 @Resolver(Post)
 export class PostResolver {
 
@@ -32,22 +40,64 @@ export class PostResolver {
     return post.text.slice(0, 50);
   }
 
-  @Query(_return => [Post])
-  posts(
+  @Mutation(_return => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("postId", () => Int) postId: number,
+    @Arg("value", () => Int) value: number,
+    @Ctx() {req}: MyContext
+  ) {
+    const isUpdoot = value !== -1;
+    const realValue = isUpdoot ? 1 : -1;
+    const userId = req.session.userId;
+    // await Updoot.insert({postId: postId, userId: userId, value: realValue});
+    // await getConnection()
+    //   .createQueryBuilder()
+    //   .update(Post)
+    //   .set({points: () => "points + :value"})
+    //   .where("id = :id", {id: postId})
+    //   .setParameter("value", realValue)
+    //   .execute();
+
+    await getConnection().query(
+      `
+    START TRANSACTION;
+    
+    insert into updoot ("userId", "postId", value)
+    values (${userId},${postId},${realValue});
+    
+    update post
+    set points = points + ${realValue}
+    where id = ${postId};
+    
+    COMMIT;
+    `
+    );
+    return true;
+  }
+
+  @Query(_return => PaginatedPosts)
+  async posts(
     @Arg("limit", _return => Int) limit: number,
     @Arg("cursor", _return => String, {nullable: true}) cursor: string | null,
-  ): Promise<Post[]> {
+  ): Promise<PaginatedPosts> {
     const realLimit = Math.min(50, limit);
+    const realLimitPlusOne = realLimit + 1;
     const qb = getConnection()
       .getRepository(Post)
       .createQueryBuilder("p")
       .orderBy("p.createdAt", "DESC")
-      .take(realLimit)
+      .take(realLimitPlusOne)
     if (cursor) {
       qb.where("p.createdAt < :cursor", {cursor: new Date(parseInt(cursor))});
     }
 
-    return qb.getMany()
+    const posts = await qb.getMany();
+
+    return {
+      posts: posts.slice(0, realLimit),
+      hasMore: posts.length === realLimitPlusOne,
+    };
 
   }
 
