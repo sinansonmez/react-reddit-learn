@@ -1,3 +1,5 @@
+// noinspection SqlNoDataSourceInspection,SqlDialectInspection,CommaExpressionJS
+
 import {
   Arg,
   Ctx,
@@ -15,6 +17,7 @@ import {Post} from "../entities/Post";
 import {isAuth} from "../middleware/isAuth";
 import {MyContext} from "../types";
 import {getConnection} from "typeorm";
+import {Updoot} from "../entities/Updoot";
 
 @InputType()
 class PostInput {
@@ -50,29 +53,50 @@ export class PostResolver {
     const isUpdoot = value !== -1;
     const realValue = isUpdoot ? 1 : -1;
     const userId = req.session.userId;
-    // await Updoot.insert({postId: postId, userId: userId, value: realValue});
-    // await getConnection()
-    //   .createQueryBuilder()
-    //   .update(Post)
-    //   .set({points: () => "points + :value"})
-    //   .where("id = :id", {id: postId})
-    //   .setParameter("value", realValue)
-    //   .execute();
+    const updoot = await Updoot.findOne({where: {postId, userId}});
 
-    await getConnection().query(
-      `
-    START TRANSACTION;
-    
-    insert into updoot ("userId", "postId", value)
-    values (${userId},${postId},${realValue});
-    
-    update post
-    set points = points + ${realValue}
-    where id = ${postId};
-    
-    COMMIT;
-    `
-    );
+    // if the user has voted on this post before, we need to update the value
+    if (updoot && updoot.value !== realValue) {
+      await getConnection().transaction(async (tm) => {
+        await tm.query(`
+            UPDATE updoot
+            SET value = $1
+            WHERE "postId" = $2
+              AND "userId" = $3
+        `, [realValue, postId, userId]);
+        await tm.query(`
+            UPDATE post
+            SET points = points + $1
+            WHERE id = $2
+        `, [2 * realValue, postId]);
+      });
+    } else if (!updoot) {
+      // if the user has never voted on this post before, we need to insert a new row
+      await getConnection().transaction(async (tm) => {
+        await tm.query(`
+            INSERT INTO updoot ("userId", "postId", value)
+            VALUES ($1, $2, $3)
+        `, [userId, postId, realValue]);
+        await tm.query(`
+            UPDATE post
+            SET points = points + $1
+            WHERE id = $2
+        `, [realValue, postId]);
+      });
+    } else {
+      // if the user has not voted on this post before, we need to create a new updoot
+      await getConnection().transaction(async (tm) => {
+        await tm.query(`
+            INSERT INTO updoot (userId, postId, value)
+            VALUES ($1, $2, $3)
+        `), [userId, postId, realValue]
+        await tm.query(`
+            UPDATE post
+            SET points = points + $1
+            WHERE id = $2
+        `), [realValue, postId]
+      });
+    }
     return true;
   }
 
