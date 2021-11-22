@@ -14,21 +14,23 @@ const UpdootSection: FunctionComponent<OwnProps> = (props) => {
       <IconButton
         aria-label="Up Vote"
         onClick={async () => {
+          if (props.post.voteStatus === 1) return;
           await vote({value: 1, postId: props.post.id});
         }}
         icon={<ChevronUpIcon/>}
         size="sm"
-        colorScheme="teal"
+        colorScheme={props.post.voteStatus === 1 ? "teal" : undefined}
         fontSize="24px"/>
       {props.post.points}
       <IconButton
         aria-label="Down Vote"
         icon={<ChevronDownIcon/>}
         onClick={async () => {
+          if (props.post.voteStatus === -1) return;
           await vote({value: -1, postId: props.post.id});
         }}
         size="sm"
-        colorScheme="teal"
+        colorScheme={props.post.voteStatus === -1 ? "red" : undefined}
         fontSize="24px"/>
     </Flex>
   );

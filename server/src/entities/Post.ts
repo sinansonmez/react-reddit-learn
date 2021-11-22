@@ -41,6 +41,9 @@ export class Post extends BaseEntity {
   @OneToMany(_return => Updoot, (updoot) => updoot.post)
   updoots: Updoot[];
 
+  @Field(_return => Int, {nullable: true})
+  voteStatus: number | null;
+
   @Field(_return => String)
   @CreateDateColumn()
   createdAt = new Date();
