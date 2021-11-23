@@ -1,15 +1,17 @@
 import {withUrqlClient} from "next-urql";
 import {createUrqlClient} from "../utils/createUrqlClient";
-import {usePostsQuery} from "../generated/graphql";
+import {useDeletePostMutation, usePostsQuery} from "../generated/graphql";
 import Layout from "../components/Layout";
-import {Box, Button, Flex, Heading, Link, Stack, Text} from "@chakra-ui/react";
+import {Box, Button, Flex, Heading, IconButton, Link, Stack, Text} from "@chakra-ui/react";
 import NextLink from "next/link";
 import {useState} from "react";
 import UpdootSection from "../components/UpdootSection";
+import {DeleteIcon} from "@chakra-ui/icons";
 
 const Index = () => {
   const [variables, setVariables] = useState({limit: 15, cursor: null as null | string});
   const [response] = usePostsQuery({variables: variables});
+  const [, deletePost] = useDeletePostMutation()
   if (!response.data && response.fetching) {
     return (
       <Layout>
@@ -27,18 +29,28 @@ const Index = () => {
           <div>loading...</div>
         ) : (
           response.data!.posts.posts.map((p) =>
-            <Flex key={p.id} p={5} shadow="md" borderWidth="1px">
+            !p ? null : (<Flex key={p.id} p={5} shadow="md" borderWidth="1px">
               <UpdootSection post={p}/>
-              <Box>
+              <Box flex={1}>
                 <NextLink href="/post/[id]" as={`/post/${p.id}`}>
                   <Link>
                     <Heading fontSize="xl">{p.title}</Heading>
                   </Link>
                 </NextLink>
                 {p.creator?.username || "null"}
-                <Text mt={4}>{p.textSnippet}</Text>
+                <Flex justifyContent="space-between">
+                  <Text mt={4}>{p.textSnippet}</Text>
+                  <IconButton
+                    colorScheme="red"
+                    onClick={async () => {
+                      await deletePost({id: p.id})
+                    }}
+                    aria-label="Search database"
+                    icon={<DeleteIcon/>}
+                  />
+                </Flex>
               </Box>
-            </Flex>)
+            </Flex>))
         )}
       </Stack>
       {response.data && response.data.posts.hasMore ?

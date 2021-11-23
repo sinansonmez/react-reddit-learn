@@ -20,6 +20,6 @@ export class Updoot extends BaseEntity {
   @PrimaryColumn()
   postId: number;
 
-  @ManyToOne(_return => Post, (post) => post.updoots) // you can get the upvotes of a post by using the post.updoots
+  @ManyToOne(_return => Post, (post) => post.updoots,{onDelete:"CASCADE"}) // you can get the upvotes of a post by using the post.updoots
   post: Post;
 }
