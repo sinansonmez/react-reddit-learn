@@ -21,9 +21,6 @@ const Index = () => {
     <Layout>
       <Flex align="center">
         <Heading>LiReddit</Heading>
-        <NextLink href="/create-post">
-          <Button ml="auto" colorScheme="teal">Create Post</Button>
-        </NextLink>
       </Flex>
       <Stack spacing={8} mt={4}>
         {response.fetching && !response.data ? (

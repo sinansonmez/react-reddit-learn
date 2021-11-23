@@ -19,23 +19,26 @@ const NavBar: FunctionComponent<OwnProps> = ({}) => {
     body = (
       <>
         <NextLink href="/register">
-          <Link color="white" mr={2}>Register</Link>
+          <Button colorScheme="teal" mr={2}>Register</Button>
         </NextLink>
         <NextLink href="/login">
-          <Link color="white">Login</Link>
+          <Button colorScheme="teal">Login</Button>
         </NextLink>
       </>
     )
   } else {
     body = (
-      <Flex>
+      <Flex align="center">
         <Box mr={2}>{data.me.username}</Box>
+        <NextLink href="/create-post">
+          <Button colorScheme="teal" mr={2}>Create Post</Button>
+        </NextLink>
         <Button
           onClick={() => {
             logout()
           }}
           isLoading={LogoutFetching}
-          variant="link"
+          colorScheme="teal"
           color={LogoutFetching ? "gray" : "white"}
         >Logout</Button>
       </Flex>
