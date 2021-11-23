@@ -150,9 +150,9 @@ export class PostResolver {
 
   @Query(_return => Post, {nullable: true})
   post(
-    @Arg("id") id: number
+    @Arg("id", _return => Int) id: number
   ): Promise<Post | undefined> {
-    return Post.findOne(id);
+    return Post.findOne(id, {relations: ["creator"]});
   }
 
   @Mutation(_return => Post)

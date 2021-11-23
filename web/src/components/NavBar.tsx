@@ -42,7 +42,14 @@ const NavBar: FunctionComponent<OwnProps> = ({}) => {
     )
   }
   return (
-    <Flex position="sticky" top={0} zIndex={1} bg="tomato" p={4} ml={"auto"}>
+    <Flex position="sticky" top={0} zIndex={1} bg="tomato" p={4} ml={"auto"} align={"center"}>
+      <Box>
+        <NextLink href="/">
+          <Link color="white" fontSize="2xl">
+            LiReddit
+          </Link>
+        </NextLink>
+      </Box>
       <Box ml="auto">
         {body}
       </Box>
