@@ -1,22 +1,23 @@
 import "reflect-metadata"
-import { createConnection } from "typeorm";
+import {createConnection} from "typeorm";
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
-import { PostResolver } from "./resolvers/post";
-import { UserResolver } from "./resolvers/user";
+import {ApolloServer} from "apollo-server-express";
+import {buildSchema} from "type-graphql";
+import {PostResolver} from "./resolvers/post";
+import {UserResolver} from "./resolvers/user";
 import Redis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
-import { __prod__, COOKIE_NAME } from "./constants";
-import { MyContext } from "./types";
-import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
+import {__prod__, COOKIE_NAME} from "./constants";
+import {MyContext} from "./types";
+import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core";
 import cors from "cors";
-import { Post } from "./entities/Post";
-import { User } from "./entities/User";
+import {Post} from "./entities/Post";
+import {User} from "./entities/User";
 import path from "path";
 import {Updoot} from "./entities/Updoot";
 import {createUserLoader} from "./utils/createUserLoader";
+import {createUpdootLoader} from "./utils/createUpdootLoader";
 
 const main = async () => {
   const conn = await createConnection({
@@ -69,7 +70,13 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({req, res}): MyContext => ({req, res, redis, userLoader: createUserLoader()}),
+    context: ({req, res}): MyContext => ({
+      req,
+      res,
+      redis,
+      userLoader: createUserLoader(),
+      updootLoader: createUpdootLoader()
+    }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
