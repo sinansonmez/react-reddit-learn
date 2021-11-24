@@ -16,6 +16,7 @@ const Index = () => {
     return (
       <Layout>
         <div>Failed query for some reason</div>
+        <div>{response.error?.message}</div>
       </Layout>
     );
   }

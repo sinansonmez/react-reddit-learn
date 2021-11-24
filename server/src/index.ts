@@ -16,6 +16,7 @@ import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import path from "path";
 import {Updoot} from "./entities/Updoot";
+import {createUserLoader} from "./utils/createUserLoader";
 
 const main = async () => {
   const conn = await createConnection({
@@ -68,7 +69,7 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({req, res}): MyContext => ({req, res, redis}),
+    context: ({req, res}): MyContext => ({req, res, redis, userLoader: createUserLoader()}),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
