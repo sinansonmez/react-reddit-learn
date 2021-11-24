@@ -13,7 +13,6 @@ import NextLink from "next/link";
 const Login: FunctionComponent<{}> = ({}) => {
   const [, login] = useLoginMutation()
   const router = useRouter()
-  console.log(router)
   return (
     <Wrapper variant="small">
       <Formik
