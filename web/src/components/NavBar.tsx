@@ -3,6 +3,7 @@ import {Box, Button, Flex, Link} from "@chakra-ui/react";
 import NextLink from "next/link";
 import {useLogoutMutation, useMeQuery} from "../generated/graphql";
 import {isServer} from "../utils/isServer";
+import {useRouter} from "next/router";
 
 interface OwnProps {
 }
@@ -12,6 +13,8 @@ const NavBar: FunctionComponent<OwnProps> = ({}) => {
   const [{data, fetching}] = useMeQuery({
     pause: isServer()
   })
+  const router = useRouter()
+
   let body = null
   if (fetching) {
 
@@ -34,8 +37,9 @@ const NavBar: FunctionComponent<OwnProps> = ({}) => {
           <Button colorScheme="teal" mr={2}>Create Post</Button>
         </NextLink>
         <Button
-          onClick={() => {
-            logout()
+          onClick={async () => {
+            await logout()
+            router.reload()
           }}
           isLoading={LogoutFetching}
           colorScheme="teal"
