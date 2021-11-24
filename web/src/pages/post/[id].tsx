@@ -1,23 +1,18 @@
 import React, {FunctionComponent} from 'react';
 import {withUrqlClient} from "next-urql";
 import {createUrqlClient} from "../../utils/createUrqlClient";
-import {useRouter} from "next/router";
-import {usePostQuery} from "../../generated/graphql";
 import Layout from "../../components/Layout";
 import {Heading} from "@chakra-ui/react";
+import {useGetPostFromUrl} from "../../utils/useGetPostFromUrl";
+import EditDeletePostButtons from "../../components/EditDeletePostButtons";
+import {useMeQuery} from "../../generated/graphql";
 
 interface OwnProps {
 }
 
 const Post: FunctionComponent<OwnProps> = ({}) => {
-  const router = useRouter();
-  const intId = typeof router.query.id === 'string' ? parseInt(router.query.id) : -1;
-  const [result] = usePostQuery({
-    pause: intId === -1,
-    variables: {
-      id: intId
-    }
-  });
+  const [result] = useGetPostFromUrl()
+  const [meData] = useMeQuery();
   if (result.fetching) {
     return (
       <Layout>
@@ -27,7 +22,6 @@ const Post: FunctionComponent<OwnProps> = ({}) => {
   }
 
   if (result.error) {
-    console.log(result.error);
     return (
       <Layout>
         <div>Error: {result.error.message}</div>
@@ -47,6 +41,7 @@ const Post: FunctionComponent<OwnProps> = ({}) => {
     <Layout>
       <Heading>{result.data.post.title}</Heading>
       {result.data.post.text}
+      {meData.data?.me?.id !== result.data.post.creator?.id ? null : <EditDeletePostButtons postId={result.data.post.id}/>}
     </Layout>
   );
 };
